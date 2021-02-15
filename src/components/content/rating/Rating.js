@@ -11,7 +11,7 @@ const Rating = ({ rating, totalStars, className }) => {
     setNumberOfStars([...Array(totalStars).keys()].map((i) => i + 1));
     let percentage;
     if (rating <= 5) {
-      percentage = (rating / 5) * 100;
+      percentage = (rating / 10) * 100;
     } else {
       percentage = (rating / 10) * 100;
     }

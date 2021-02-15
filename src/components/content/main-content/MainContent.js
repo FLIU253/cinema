@@ -1,63 +1,97 @@
-import React, {useState} from 'react'
-import './MainContent.scss'
-import '../slide-show/Slideshow';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import './MainContent.scss';
 import Slideshow from '../slide-show/Slideshow';
 import Paginate from '../paginate/Paginate';
 import Grid from '../grid/Grid';
+import { IMAGE_URL } from '../../../services/movies.service';
+import { getMovies, setResponsePageNumber } from '../../../redux/actions/movies';
 
-const MainContent = () => {
-    const images = [
+const MainContent = (props) => {
+  const { list, movieType, totalPages, page, getMovies, setResponsePageNumber } = props;
+  const [currentPage, setCurrentPage] = useState(page);
+  const [images, setImages] = useState([]);
+  const randomMovies = list.sort(() => Math.random() - Math.random()).slice(0, 4);
+
+  const HEADER_TYPE = {
+    now_playing: 'Now Playing',
+    popular: 'Popular',
+    top_rated: 'Top Rated',
+    upcoming: 'Upcoming'
+  };
+
+  useEffect(() => {
+    if (randomMovies.length) {
+      const IMAGES = [
         {
-            url: 'https://6.viki.io/image/4db090be7c3b4285ba59cd678100398a.jpeg?s=900x600&e=t',
-            rating: 7.5
-        }, 
-        {
-            url: 'https://www.thefamouspeople.com/profiles/images/kim-tae-ri-2.jpg',
-            rating: 7
+          id: 1,
+          url: `${IMAGE_URL}${randomMovies[0].backdrop_path}`
         },
         {
-            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxq5ebU3v4oOzEwmM7V15EUArWrW5Cq9MEDw&usqp=CAU',
-            rating: 8.5
+          id: 2,
+          url: `${IMAGE_URL}${randomMovies[1].backdrop_path}`
         },
         {
-            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxq5ebU3v4oOzEwmM7V15EUArWrW5Cq9MEDw&usqp=CAU',
-            rating: 1.5
+          id: 3,
+          url: `${IMAGE_URL}${randomMovies[2].backdrop_path}`
         },
         {
-            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxq5ebU3v4oOzEwmM7V15EUArWrW5Cq9MEDw&usqp=CAU',
-            rating: 6.6
-        },
-        {
-            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxq5ebU3v4oOzEwmM7V15EUArWrW5Cq9MEDw&usqp=CAU',
-            rating: 7.5
-        },
-        {
-            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxq5ebU3v4oOzEwmM7V15EUArWrW5Cq9MEDw&usqp=CAU',
-            rating: 7.5
+          id: 4,
+          url: `${IMAGE_URL}${randomMovies[3].backdrop_path}`
         }
-];
-
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const paginate = (type) => {
-        if(type === "prev" && currentPage > 1){
-            setCurrentPage((prev) => prev -1);
-        }else {
-            setCurrentPage((prev) => prev + 1);
-        }
+      ];
+      setImages(IMAGES);
     }
+    // eslint-disable-next-line
+  }, []);
 
-    return (
-        <div className="main-content">
-            <Slideshow images = {images} auto={true} showArrows = {true}/>
-            <div className="grid-movie-title">
-                <div className="movieType">Now Playing</div>
-                <div className="paginate"><Paginate paginate = {paginate} currentPage = {currentPage} totalPages = {10} /></div>
-            </div>
-            {/* Display grid component */}
-            <Grid images = {images} />
+  useEffect(() => {
+    setCurrentPage(page);
+    // eslint-disable-next-line
+  }, [page, totalPages]);
+
+  const paginate = (type) => {
+    let pageNumber = currentPage;
+    if (type === 'prev' && currentPage >= 1) {
+      pageNumber -= 1;
+    } else {
+      pageNumber += 1;
+    }
+    setCurrentPage(pageNumber);
+    setResponsePageNumber(pageNumber, totalPages);
+    getMovies(movieType, pageNumber);
+  };
+
+  return (
+    <div className="main-content">
+      <Slideshow images={images} auto={true} showArrows={true} />
+      <div className="grid-movie-title">
+        <div className="movieType">{HEADER_TYPE[movieType]}</div>
+        <div className="paginate">
+          <Paginate currentPage={currentPage} totalPages={totalPages} paginate={paginate} />
         </div>
-    )
-}
+      </div>
+      <Grid />
+    </div>
+  );
+};
 
-export default MainContent;
+MainContent.propTypes = {
+  list: PropTypes.array.isRequired,
+  movieType: PropTypes.string.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  getMovies: PropTypes.func.isRequired,
+  setResponsePageNumber: PropTypes.func.isRequired
+};
+
+const mapStateToProps = (state) => ({
+  list: state.movies.list,
+  movieType: state.movies.movieType,
+  totalPages: state.movies.totalPages,
+  page: state.movies.page
+});
+
+export default connect(mapStateToProps, { getMovies, setResponsePageNumber })(MainContent);

@@ -1,10 +1,12 @@
+import { SET_ERROR } from '../types';
+
 const initialState = '';
 
-/* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (state = initialState, action) => {
-
-    switch(action.type) {
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case SET_ERROR:
+      return action.payload;
+    default:
+      return state;
+  }
 };

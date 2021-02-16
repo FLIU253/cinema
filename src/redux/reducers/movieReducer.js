@@ -1,4 +1,4 @@
-import { MOVIE_LIST, RESPONSE_PAGE, LOAD_MORE_RESULTS, MOVIE_TYPE, SEARCH_QUERY, SEARCH_RESULT } from '../types';
+import { MOVIE_LIST, RESPONSE_PAGE, LOAD_MORE_RESULTS, MOVIE_TYPE, SEARCH_QUERY, SEARCH_RESULT, MOVIE_DETAILS, CLEAR_MOVIE_DETAILS} from '../types';
 
 const initialState = {
   list: [],
@@ -6,9 +6,11 @@ const initialState = {
   totalPages: 0,
   movieType: 'now_playing',
   searchQuery: '',
-  searchResult: []
+  searchResult: [],
+  movie:[]
 };
 
+/* eslint import/no-anonymous-default-export: [2, {"allowArrowFunction": true}] */
 export default (state = initialState, action) => {
   switch (action.type) {
     case MOVIE_LIST:
@@ -44,6 +46,16 @@ export default (state = initialState, action) => {
         ...state,
         searchQuery: action.payload
       };
+      case MOVIE_DETAILS:
+        return {
+          ...state,
+          movie: action.payload
+        };
+      case CLEAR_MOVIE_DETAILS:
+        return {
+          ...state,
+          movie: []
+        }
     default:
       return state;
   }

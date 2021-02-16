@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {connect} from 'react-redux';
-import {v4 as uuidv4} from 'uuid';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
 
 import './Overview.scss';
-import {IMAGE_URL} from '../../../../services/movies.service';
+import { IMAGE_URL } from '../../../../services/movies.service';
 
 const Overview = (props) => {
-  const {movie} = props;
+  const { movie } = props;
   const [items, setItems] = useState([]);
   const [details] = useState(movie[0]);
   const [credits] = useState(movie[1]);
 
   useEffect(() => {
-
     const detailItems = [
       {
         id: 0,
@@ -62,9 +62,7 @@ const Overview = (props) => {
 
     for (let i = 0; i < symbolArray.length; i++) {
       if (number >= symbolArray[i].value) {
-        result =
-          (number / symbolArray[i].value).toFixed(digits).replace(regex, '$1') +
-          symbolArray[i].symbol;
+        result = (number / symbolArray[i].value).toFixed(digits).replace(regex, '$1') + symbolArray[i].symbol;
       }
     }
     return result;
@@ -78,9 +76,8 @@ const Overview = (props) => {
         <div className="cast">
           <div className="div-title">Cast</div>
           <table>
-              {
-                credits && credits.cast.map((data) => 
-                <tbody key = {uuidv4()}>
+            {credits.cast.map((data) => (
+              <tbody key={uuidv4()}>
                 <tr>
                   <td>
                     <img src={data.profile_path ? `${IMAGE_URL}${data.profile_path}` : 'http://placehold.it/54x81'} alt="" />
@@ -89,35 +86,28 @@ const Overview = (props) => {
                   <td>{data.character}</td>
                 </tr>
               </tbody>
-                )
-              }
+            ))}
           </table>
         </div>
       </div>
       <div className="overview-column-2">
         <div className="overview-detail">
           <h6>Production Companies</h6>
-          {
-            details.production_companies.map((prod) => (
-            <div className="product-company" key = {uuidv4()}>
-              <img src={prod.logo_path ? `${IMAGE_URL}${prod.logo_path}` : `http://placehold.it/30x30`} alt="" />
+          {details.production_companies.map((prod) => (
+            <div className="product-company" key={uuidv4()}>
+              <img src={prod.logo_path ? `${IMAGE_URL}${prod.logo_path}` : 'http://placehold.it/30x30'} alt="" />
               <span>{prod.name}</span>
             </div>
-            ))
-          }
+          ))}
         </div>
         <div className="overview-detail">
           <h6>Language(s)</h6>
           <p>
-           {
-             details.spoken_languages.map((language) => <a href="!#" key = {language.name}>{language.name}</a>)
-           }
-          </p>
-        </div>
-        <div className="overview-detail">
-          <h6>Tagline</h6>
-          <p>
-            <a href="!#">Tagline</a>
+            {details.spoken_languages.map((language) => (
+              <a href="!#" key={language.name}>
+                {language.name}
+              </a>
+            ))}
           </p>
         </div>
         {items.map((data) => (
@@ -133,9 +123,12 @@ const Overview = (props) => {
   );
 };
 
+Overview.propTypes = {
+  movie: PropTypes.array
+};
+
 const mapStateToProps = (state) => ({
   movie: state.movies.movie
-})
-
+});
 
 export default connect(mapStateToProps, {})(Overview);

@@ -17,20 +17,19 @@ const Grid = (props) => {
     setMovieData(list);
   }, [list]);
 
-  const formatMovieTitle = (title) => {
-    const titleStr = title.toLowerCase();
-    return titleStr.replace(/ /g, '-');
-  };
-
   return (
     <>
       <div className="grid">
         {movieData.map((data) => (
           <div key={uuidv4()}>
-            <LazyImage className="grid-cell" src={`${IMAGE_URL}${data.poster_path}`} alt="placeholder">
+            <LazyImage
+              className="grid-cell"
+              src={`${IMAGE_URL}${data.poster_path}`}
+              alt="placeholder"
+            >
               <div className="grid-read-more">
                 <button className="grid-cell-button">
-                  <Link to={`/${data.id}/${formatMovieTitle(data.title)}/details`}>Read More</Link>
+                  <Link to={`/${data.id}/details`}>Read More</Link>
                 </button>
               </div>
               <div className="grid-detail">
@@ -50,11 +49,11 @@ const Grid = (props) => {
 };
 
 Grid.propTypes = {
-  list: PropTypes.array.isRequired
+  list: PropTypes.array.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  list: state.movies.list
+  list: state.movies.list,
 });
 
 export default connect(mapStateToProps, {})(Grid);
